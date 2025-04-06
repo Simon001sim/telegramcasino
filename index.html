@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Казино Рулетка</title>
+  <title>Telegram Рулетка</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * {
@@ -12,19 +12,52 @@
     body {
       margin: 0;
       padding: 0;
-      background: #111;
+      background: #f7f7f7;
       font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
-      color: #fff;
+      justify-content: start;
+      min-height: 100vh;
+      color: #111;
     }
 
     h1 {
+      margin: 20px 0 10px;
+      color: #333;
+    }
+
+    #balance {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    #betSection {
       margin-bottom: 20px;
-      color: #ffd700;
+    }
+
+    #betInput {
+      width: 80px;
+      padding: 5px;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    #wheelWrapper {
+      position: relative;
+    }
+
+    #pointer {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-bottom: 20px solid red;
+      z-index: 10;
     }
 
     #wheel {
@@ -32,10 +65,11 @@
       width: 300px;
       height: 300px;
       border-radius: 50%;
-      border: 10px solid #fff;
+      border: 10px solid #000;
       overflow: hidden;
       transform: rotate(0deg);
       transition: transform 5s ease-out;
+      background: #fff;
     }
 
     .number {
@@ -57,45 +91,41 @@
     }
 
     #spinButton {
-      margin-top: 30px;
-      padding: 15px 30px;
+      margin-top: 20px;
+      padding: 12px 25px;
       font-size: 18px;
-      border: none;
-      background: #28a745;
+      background: #007bff;
       color: white;
+      border: none;
       border-radius: 10px;
       cursor: pointer;
       transition: background 0.3s ease;
     }
 
     #spinButton:hover {
-      background: #218838;
+      background: #0056b3;
     }
 
     #result {
       margin-top: 20px;
-      font-size: 24px;
-      color: #00ffff;
-    }
-
-    #pointer {
-      position: absolute;
-      top: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-      border-bottom: 20px solid yellow;
-      z-index: 10;
+      font-size: 22px;
+      color: #333;
     }
   </style>
 </head>
 <body>
-  <h1>🎰 Рулетка 0–36</h1>
-  <div id="pointer"></div>
-  <div id="wheel"></div>
+  <h1>🎰 Рулетка</h1>
+  <div id="balance">Баланс: ⭐ <span id="stars">100</span></div>
+
+  <div id="betSection">
+    Ставка: <input type="number" id="betInput" min="1" max="100" value="10"> ⭐
+  </div>
+
+  <div id="wheelWrapper">
+    <div id="pointer"></div>
+    <div id="wheel"></div>
+  </div>
+
   <button id="spinButton">Крутить колесо</button>
   <div id="result"></div>
 
@@ -103,10 +133,13 @@
     const wheel = document.getElementById("wheel");
     const result = document.getElementById("result");
     const spinButton = document.getElementById("spinButton");
+    const betInput = document.getElementById("betInput");
+    const starsDisplay = document.getElementById("stars");
 
-    const numbers = Array.from({ length: 37 }, (_, i) => i); // 0–36
+    let balance = 100;
+    const numbers = Array.from({ length: 37 }, (_, i) => i);
+    let currentRotation = 0;
 
-    // Добавляем числа на колесо
     numbers.forEach((num, i) => {
       const div = document.createElement("div");
       div.className = "number";
@@ -115,20 +148,41 @@
       wheel.appendChild(div);
     });
 
-    let currentRotation = 0;
-
     spinButton.onclick = () => {
+      const bet = parseInt(betInput.value);
+      if (isNaN(bet) || bet <= 0 || bet > balance) {
+        alert("Неверная ставка!");
+        return;
+      }
+
+      balance -= bet;
+      starsDisplay.innerText = balance;
+
       const randomNumber = Math.floor(Math.random() * 37);
       const degreesPerNumber = 360 / 37;
-      const targetRotation = 360 * 5 + (360 - randomNumber * degreesPerNumber); // 5 оборотов + позиция
-
+      const extraSpins = 5;
+      const targetRotation = extraSpins * 360 + (360 - randomNumber * degreesPerNumber);
       currentRotation += targetRotation;
 
       wheel.style.transition = "transform 5s ease-out";
       wheel.style.transform = `rotate(${currentRotation}deg)`;
 
+      spinButton.disabled = true;
+      result.innerText = "Крутим...";
+
       setTimeout(() => {
-        result.innerText = `Выпало число: ${randomNumber}`;
+        result.innerText = `Выпало: ${randomNumber}`;
+
+        if (randomNumber === 0) {
+          const win = bet * 36;
+          balance += win;
+          result.innerText += ` 🎉 Ты выиграл ${win} ⭐`;
+        } else {
+          result.innerText += ` 😞 Ты проиграл ${bet} ⭐`;
+        }
+
+        starsDisplay.innerText = balance;
+        spinButton.disabled = false;
       }, 5200);
     };
   </script>
