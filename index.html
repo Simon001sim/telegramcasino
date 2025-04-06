@@ -2,189 +2,201 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Telegram Рулетка</title>
+  <title>Рулетка 0–36</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       margin: 0;
-      padding: 0;
-      background: #f7f7f7;
+      background-color: #101010;
       font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: start;
-      min-height: 100vh;
-      color: #111;
-    }
-
-    h1 {
-      margin: 20px 0 10px;
-      color: #333;
-    }
-
-    #balance {
-      margin-bottom: 10px;
-      font-size: 18px;
-    }
-
-    #betSection {
-      margin-bottom: 20px;
-    }
-
-    #betInput {
-      width: 80px;
-      padding: 5px;
-      font-size: 16px;
+      color: #fff;
       text-align: center;
     }
 
-    #wheelWrapper {
-      position: relative;
+    h1 {
+      margin-top: 20px;
+      font-size: 28px;
+      color: #ffcc00;
     }
 
-    #pointer {
-      position: absolute;
-      top: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-      border-bottom: 20px solid red;
-      z-index: 10;
-    }
-
-    #wheel {
+    .wheel-container {
       position: relative;
+      margin: 40px auto;
       width: 300px;
       height: 300px;
       border-radius: 50%;
-      border: 10px solid #000;
+      border: 10px solid #444;
       overflow: hidden;
-      transform: rotate(0deg);
-      transition: transform 5s ease-out;
-      background: #fff;
     }
 
     .number {
       position: absolute;
       width: 50%;
       height: 50%;
-      left: 50%;
       top: 50%;
+      left: 50%;
       transform-origin: 0% 0%;
-      background: red;
-      color: white;
       text-align: right;
-      padding-right: 10px;
-      line-height: 1.5;
+      font-size: 14px;
+      font-weight: bold;
     }
 
-    .number:nth-child(even) {
-      background: black;
+    .arrow {
+      width: 0;
+      height: 0;
+      margin: 0 auto 20px;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 30px solid #ffcc00;
     }
 
-    #spinButton {
-      margin-top: 20px;
-      padding: 12px 25px;
+    #spin {
+      padding: 12px 28px;
       font-size: 18px;
-      background: #007bff;
+      background-color: crimson;
       color: white;
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      margin-top: 30px;
     }
 
-    #spinButton:hover {
-      background: #0056b3;
-    }
-
-    #result {
+    select, input[type="number"] {
+      padding: 10px;
+      font-size: 16px;
       margin-top: 20px;
+      background-color: #333;
+      color: white;
+      border-radius: 6px;
+      border: 1px solid #555;
+    }
+
+    .result {
       font-size: 22px;
-      color: #333;
+      margin-top: 30px;
+    }
+
+    #balance {
+      margin-top: 10px;
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
-  <h1>🎰 Рулетка</h1>
-  <div id="balance">Баланс: ⭐ <span id="stars">100</span></div>
 
-  <div id="betSection">
-    Ставка: <input type="number" id="betInput" min="1" max="100" value="10"> ⭐
+  <h1>🎰 Рулетка 0–36</h1>
+
+  <div id="balance">Ваши звёзды: ⭐ <span id="stars">100</span></div>
+
+  <div class="arrow"></div>
+
+  <div class="wheel-container" id="wheel"></div>
+
+  <div>
+    <label for="bet">Ставка на цвет:</label><br>
+    <select id="bet">
+      <option value="red">🔴 Красное</option>
+      <option value="black">⚫ Чёрное</option>
+      <option value="green">🟢 Зеро (0)</option>
+    </select>
   </div>
 
-  <div id="wheelWrapper">
-    <div id="pointer"></div>
-    <div id="wheel"></div>
+  <div>
+    <label for="amount">Ставка (звёзды):</label><br>
+    <input type="number" id="amount" min="1" value="10">
   </div>
 
-  <button id="spinButton">Крутить колесо</button>
-  <div id="result"></div>
+  <button id="spin">Крутить</button>
+
+  <div class="result" id="result"></div>
 
   <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    let stars = 100;
+
     const wheel = document.getElementById("wheel");
-    const result = document.getElementById("result");
-    const spinButton = document.getElementById("spinButton");
-    const betInput = document.getElementById("betInput");
-    const starsDisplay = document.getElementById("stars");
+    const resultDiv = document.getElementById("result");
+    const starsSpan = document.getElementById("stars");
+    const numbers = [];
 
-    let balance = 100;
-    const numbers = Array.from({ length: 37 }, (_, i) => i);
-    let currentRotation = 0;
+    const redNumbers = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+    const blackNumbers = [2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35];
 
-    numbers.forEach((num, i) => {
-      const div = document.createElement("div");
-      div.className = "number";
-      div.innerText = num;
-      div.style.transform = `rotate(${i * (360 / 37)}deg) translate(-50%, -100%)`;
-      wheel.appendChild(div);
-    });
+    for (let i = 0; i <= 36; i++) {
+      const number = document.createElement("div");
+      number.classList.add("number");
 
-    spinButton.onclick = () => {
-      const bet = parseInt(betInput.value);
-      if (isNaN(bet) || bet <= 0 || bet > balance) {
-        alert("Неверная ставка!");
+      const angle = (360 / 37) * i;
+      number.style.transform = `rotate(${angle}deg) translate(-100%, -100%)`;
+
+      number.innerText = i;
+      if (i === 0) {
+        number.style.color = "lime";
+      } else if (redNumbers.includes(i)) {
+        number.style.color = "crimson";
+      } else {
+        number.style.color = "gray";
+      }
+
+      wheel.appendChild(number);
+      numbers.push(i);
+    }
+
+    function getColor(num) {
+      if (num === 0) return 'green';
+      if (redNumbers.includes(num)) return 'red';
+      return 'black';
+    }
+
+    document.getElementById("spin").addEventListener("click", () => {
+      const bet = document.getElementById("bet").value;
+      const amount = parseInt(document.getElementById("amount").value);
+
+      if (isNaN(amount) || amount <= 0) {
+        alert("Введите корректную ставку.");
         return;
       }
 
-      balance -= bet;
-      starsDisplay.innerText = balance;
+      if (amount > stars) {
+        alert("Недостаточно звёзд.");
+        return;
+      }
 
-      const randomNumber = Math.floor(Math.random() * 37);
-      const degreesPerNumber = 360 / 37;
-      const extraSpins = 5;
-      const targetRotation = extraSpins * 360 + (360 - randomNumber * degreesPerNumber);
-      currentRotation += targetRotation;
+      stars -= amount;
+      starsSpan.textContent = stars;
 
-      wheel.style.transition = "transform 5s ease-out";
-      wheel.style.transform = `rotate(${currentRotation}deg)`;
+      const selected = numbers[Math.floor(Math.random() * numbers.length)];
+      const anglePerNumber = 360 / 37;
+      const rotateTo = 3600 + (360 - selected * anglePerNumber);
 
-      spinButton.disabled = true;
-      result.innerText = "Крутим...";
+      wheel.style.transition = "transform 4s ease-out";
+      wheel.style.transform = `rotate(${rotateTo}deg)`;
 
       setTimeout(() => {
-        result.innerText = `Выпало: ${randomNumber}`;
+        const color = getColor(selected);
+        const won =
+          (bet === "green" && selected === 0) ||
+          (bet === "red" && color === "red") ||
+          (bet === "black" && color === "black");
 
-        if (randomNumber === 0) {
-          const win = bet * 36;
-          balance += win;
-          result.innerText += ` 🎉 Ты выиграл ${win} ⭐`;
-        } else {
-          result.innerText += ` 😞 Ты проиграл ${bet} ⭐`;
+        let winAmount = 0;
+        if (won) {
+          winAmount = bet === "green" ? amount * 36 : amount * 2;
+          stars += winAmount;
         }
 
-        starsDisplay.innerText = balance;
-        spinButton.disabled = false;
-      }, 5200);
-    };
+        starsSpan.textContent = stars;
+        const emoji = color === 'red' ? '🔴' : color === 'black' ? '⚫' : '🟢';
+
+        resultDiv.innerHTML = `Выпало: ${emoji} <b>${selected}</b> — ${won ? `🎉 Победа! +${winAmount}⭐` : `😢 Проигрыш -${amount}⭐`}`;
+
+        tg.sendData(JSON.stringify({ bet, selected, won, amount, winAmount }));
+      }, 4200);
+    });
   </script>
+
 </body>
 </html>
