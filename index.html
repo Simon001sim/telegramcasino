@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Казино Рулетка</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #111;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #fff;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #ffd700;
+    }
+
+    #wheel {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      border: 10px solid #fff;
+      overflow: hidden;
+      transform: rotate(0deg);
+      transition: transform 5s ease-out;
+    }
+
+    .number {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      left: 50%;
+      top: 50%;
+      transform-origin: 0% 0%;
+      background: red;
+      color: white;
+      text-align: right;
+      padding-right: 10px;
+      line-height: 1.5;
+    }
+
+    .number:nth-child(even) {
+      background: black;
+    }
+
+    #spinButton {
+      margin-top: 30px;
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      background: #28a745;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    #spinButton:hover {
+      background: #218838;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 24px;
+      color: #00ffff;
+    }
+
+    #pointer {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-bottom: 20px solid yellow;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎰 Рулетка 0–36</h1>
+  <div id="pointer"></div>
+  <div id="wheel"></div>
+  <button id="spinButton">Крутить колесо</button>
+  <div id="result"></div>
+
+  <script>
+    const wheel = document.getElementById("wheel");
+    const result = document.getElementById("result");
+    const spinButton = document.getElementById("spinButton");
+
+    const numbers = Array.from({ length: 37 }, (_, i) => i); // 0–36
+
+    // Добавляем числа на колесо
+    numbers.forEach((num, i) => {
+      const div = document.createElement("div");
+      div.className = "number";
+      div.innerText = num;
+      div.style.transform = `rotate(${i * (360 / 37)}deg) translate(-50%, -100%)`;
+      wheel.appendChild(div);
+    });
+
+    let currentRotation = 0;
+
+    spinButton.onclick = () => {
+      const randomNumber = Math.floor(Math.random() * 37);
+      const degreesPerNumber = 360 / 37;
+      const targetRotation = 360 * 5 + (360 - randomNumber * degreesPerNumber); // 5 оборотов + позиция
+
+      currentRotation += targetRotation;
+
+      wheel.style.transition = "transform 5s ease-out";
+      wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+      setTimeout(() => {
+        result.innerText = `Выпало число: ${randomNumber}`;
+      }, 5200);
+    };
+  </script>
+</body>
+</html>
