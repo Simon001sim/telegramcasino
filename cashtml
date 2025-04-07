@@ -1,172 +1,189 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Рулетка 0–36</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #111;
-      color: #fff;
-      font-family: 'Arial', sans-serif;
-      text-align: center;
-    }
-
-    h1 {
-      margin-top: 20px;
-      font-size: 26px;
-      color: gold;
-    }
-
-    #wheel {
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      border: 10px solid #555;
-      margin: 30px auto;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 0 20px #000;
-    }
-
-    .segment {
-      position: absolute;
-      width: 50%;
-      height: 50%;
-      top: 50%;
-      left: 50%;
-      transform-origin: 0% 0%;
-      text-align: right;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .arrow {
-      width: 0;
-      height: 0;
-      margin: 0 auto;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-bottom: 30px solid gold;
-    }
-
-    select {
-      padding: 10px;
-      margin-top: 20px;
-      background-color: #222;
-      color: #fff;
-      border-radius: 5px;
-      border: 1px solid #444;
-      font-size: 16px;
-    }
-
-    .button {
-      margin-top: 30px;
-      padding: 12px 24px;
-      font-size: 18px;
-      background: linear-gradient(to right, crimson, darkred);
-      border: none;
-      color: white;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 0 10px crimson;
-      transition: 0.3s;
-    }
-
-    .button:hover {
-      background: linear-gradient(to right, #ff4444, #aa0000);
-      box-shadow: 0 0 15px red;
-    }
-
-    #result {
-      margin-top: 25px;
-      font-size: 20px;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Stars Roulette</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .roulette-number {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .roulette-number:hover {
+            transform: scale(1.1);
+        }
+        .roulette-number.selected {
+            box-shadow: 0 0 0 3px gold;
+        }
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #4b5563;
+            outline: none;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+    <header class="p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Stars Roulette</h1>
+        <div class="flex items-center space-x-2">
+            <span class="text-yellow-400 font-bold">100</span>
+            <i class="fas fa-star text-yellow-400"></i>
+        </div>
+    </header>
 
-  <h1>🎰 Рулетка 0–36</h1>
+    <main class="flex-1 flex flex-col items-center justify-center p-4">
+        <!-- Roulette Table -->
+        <div class="grid grid-cols-12 gap-1 mb-8 w-full max-w-2xl">
+            <!-- 0 -->
+            <div class="col-span-1 flex justify-center">
+                <div class="roulette-number bg-green-600" data-number="0">0</div>
+            </div>
+            
+            <!-- 1-36 -->
+            <div class="col-span-11 grid grid-cols-3 gap-1">
+                <!-- First 12 (1-12) -->
+                <div class="roulette-number bg-red-600" data-number="1">1</div>
+                <div class="roulette-number bg-black" data-number="2">2</div>
+                <div class="roulette-number bg-red-600" data-number="3">3</div>
+                <div class="roulette-number bg-black" data-number="4">4</div>
+                <div class="roulette-number bg-red-600" data-number="5">5</div>
+                <div class="roulette-number bg-black" data-number="6">6</div>
+                <div class="roulette-number bg-red-600" data-number="7">7</div>
+                <div class="roulette-number bg-black" data-number="8">8</div>
+                <div class="roulette-number bg-red-600" data-number="9">9</div>
+                <div class="roulette-number bg-black" data-number="10">10</div>
+                <div class="roulette-number bg-black" data-number="11">11</div>
+                <div class="roulette-number bg-red-600" data-number="12">12</div>
+                
+                <!-- Second 12 (13-24) -->
+                <div class="roulette-number bg-black" data-number="13">13</div>
+                <div class="roulette-number bg-red-600" data-number="14">14</div>
+                <div class="roulette-number bg-black" data-number="15">15</div>
+                <div class="roulette-number bg-red-600" data-number="16">16</div>
+                <div class="roulette-number bg-black" data-number="17">17</div>
+                <div class="roulette-number bg-red-600" data-number="18">18</div>
+                <div class="roulette-number bg-red-600" data-number="19">19</div>
+                <div class="roulette-number bg-black" data-number="20">20</div>
+                <div class="roulette-number bg-red-600" data-number="21">21</div>
+                <div class="roulette-number bg-black" data-number="22">22</div>
+                <div class="roulette-number bg-red-600" data-number="23">23</div>
+                <div class="roulette-number bg-black" data-number="24">24</div>
+                
+                <!-- Third 12 (25-36) -->
+                <div class="roulette-number bg-red-600" data-number="25">25</div>
+                <div class="roulette-number bg-black" data-number="26">26</div>
+                <div class="roulette-number bg-red-600" data-number="27">27</div>
+                <div class="roulette-number bg-black" data-number="28">28</div>
+                <div class="roulette-number bg-red-600" data-number="29">29</div>
+                <div class="roulette-number bg-black" data-number="30">30</div>
+                <div class="roulette-number bg-red-600" data-number="31">31</div>
+                <div class="roulette-number bg-black" data-number="32">32</div>
+                <div class="roulette-number bg-red-600" data-number="33">33</div>
+                <div class="roulette-number bg-black" data-number="34">34</div>
+                <div class="roulette-number bg-red-600" data-number="35">35</div>
+                <div class="roulette-number bg-black" data-number="36">36</div>
+            </div>
+        </div>
 
-  <div class="arrow"></div>
+        <!-- Bet Controls -->
+        <div class="w-full max-w-md space-y-4">
+            <div class="flex items-center justify-between">
+                <span class="text-gray-400">Bet Amount:</span>
+                <div class="flex items-center space-x-1">
+                    <span id="betAmount" class="font-bold">10</span>
+                    <i class="fas fa-star text-yellow-400"></i>
+                </div>
+            </div>
+            
+            <input 
+                type="range" 
+                min="10" 
+                max="100" 
+                value="10" 
+                class="slider" 
+                id="betSlider"
+            >
+            
+            <button 
+                id="placeBet" 
+                class="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-bold transition-colors"
+            >
+                Place Bet (10 <i class="fas fa-star"></i>)
+            </button>
+        </div>
+    </main>
 
-  <div id="wheel"></div>
-
-  <select id="bet">
-    <option value="red">🔴 Красное</option>
-    <option value="black">⚫ Чёрное</option>
-    <option value="green">🟢 Зеро (0)</option>
-  </select>
-
-  <br>
-  <button class="button" onclick="spin()">Крутить рулетку</button>
-
-  <div id="result"></div>
-
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-
-    const wheel = document.getElementById("wheel");
-    const resultDiv = document.getElementById("result");
-
-    const red = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
-    const black = [2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35];
-
-    const numbers = [];
-
-    for (let i = 0; i <= 36; i++) {
-      numbers.push(i);
-    }
-
-    function getColor(num) {
-      if (num === 0) return "green";
-      if (red.includes(num)) return "red";
-      return "black";
-    }
-
-    function createWheel() {
-      wheel.innerHTML = '';
-      for (let i = 0; i < 37; i++) {
-        const segment = document.createElement('div');
-        segment.className = 'segment';
-        const angle = (360 / 37) * i;
-        segment.style.transform = `rotate(${angle}deg) translate(-100%, -100%)`;
-        segment.innerText = i;
-        const color = getColor(i);
-        segment.style.color = color === 'red' ? 'crimson' : color === 'black' ? 'white' : 'lime';
-        wheel.appendChild(segment);
-      }
-    }
-
-    createWheel();
-
-    function spin() {
-      const bet = document.getElementById("bet").value;
-      const selected = Math.floor(Math.random() * 37);
-      const anglePerNumber = 360 / 37;
-      const totalSpin = 3600 + (360 - selected * anglePerNumber);
-
-      wheel.style.transition = "transform 4s ease-out";
-      wheel.style.transform = `rotate(${totalSpin}deg)`;
-
-      setTimeout(() => {
-        const color = getColor(selected);
-        const win =
-          (bet === "green" && selected === 0) ||
-          (bet === "red" && color === "red") ||
-          (bet === "black" && color === "black");
-
-        const emoji = color === 'red' ? '🔴' : color === 'black' ? '⚫' : '🟢';
-        resultDiv.innerHTML = `Выпало: ${emoji} <b>${selected}</b><br>${win ? '🎉 Победа!' : '😢 Проигрыш'}`;
-
-        tg.sendData(JSON.stringify({ bet, selected, win }));
-      }, 4200);
-    }
-  </script>
+    <script>
+        // Number selection
+        const numbers = document.querySelectorAll('.roulette-number');
+        let selectedNumbers = [];
+        
+        numbers.forEach(number => {
+            number.addEventListener('click', () => {
+                const num = number.dataset.number;
+                if (selectedNumbers.includes(num)) {
+                    selectedNumbers = selectedNumbers.filter(n => n !== num);
+                    number.classList.remove('selected');
+                } else {
+                    selectedNumbers.push(num);
+                    number.classList.add('selected');
+                }
+                updateBetButton();
+            });
+        });
+        
+        // Bet amount slider
+        const betSlider = document.getElementById('betSlider');
+        const betAmountDisplay = document.getElementById('betAmount');
+        const placeBetButton = document.getElementById('placeBet');
+        
+        betSlider.addEventListener('input', () => {
+            const amount = betSlider.value;
+            betAmountDisplay.textContent = amount;
+            updateBetButton();
+        });
+        
+        function updateBetButton() {
+            const amount = betSlider.value;
+            placeBetButton.innerHTML = `Place Bet (${amount} <i class="fas fa-star"></i>)`;
+            
+            if (selectedNumbers.length === 0) {
+                placeBetButton.disabled = true;
+                placeBetButton.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                placeBetButton.disabled = false;
+                placeBetButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+        
+        // Place bet handler
+        placeBetButton.addEventListener('click', () => {
+            const amount = betSlider.value;
+            const numbers = selectedNumbers.join(', ');
+            alert(`Bet placed on: ${numbers}\nAmount: ${amount} stars`);
+            // Here you would normally redirect to the spinning animation page
+        });
+    </script>
 </body>
 </html>
