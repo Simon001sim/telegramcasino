@@ -1,202 +1,186 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Рулетка 0–36</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      margin: 0;
-      background-color: #101010;
-      font-family: Arial, sans-serif;
-      color: #fff;
-      text-align: center;
-    }
-
-    h1 {
-      margin-top: 20px;
-      font-size: 28px;
-      color: #ffcc00;
-    }
-
-    .wheel-container {
-      position: relative;
-      margin: 40px auto;
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      border: 10px solid #444;
-      overflow: hidden;
-    }
-
-    .number {
-      position: absolute;
-      width: 50%;
-      height: 50%;
-      top: 50%;
-      left: 50%;
-      transform-origin: 0% 0%;
-      text-align: right;
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    .arrow {
-      width: 0;
-      height: 0;
-      margin: 0 auto 20px;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-bottom: 30px solid #ffcc00;
-    }
-
-    #spin {
-      padding: 12px 28px;
-      font-size: 18px;
-      background-color: crimson;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      margin-top: 30px;
-    }
-
-    select, input[type="number"] {
-      padding: 10px;
-      font-size: 16px;
-      margin-top: 20px;
-      background-color: #333;
-      color: white;
-      border-radius: 6px;
-      border: 1px solid #555;
-    }
-
-    .result {
-      font-size: 22px;
-      margin-top: 30px;
-    }
-
-    #balance {
-      margin-top: 10px;
-      font-size: 18px;
-    }
-  </style>
-</head>
-<body>
-
-  <h1>🎰 Рулетка 0–36</h1>
-
-  <div id="balance">Ваши звёзды: ⭐ <span id="stars">100</span></div>
-
-  <div class="arrow"></div>
-
-  <div class="wheel-container" id="wheel"></div>
-
-  <div>
-    <label for="bet">Ставка на цвет:</label><br>
-    <select id="bet">
-      <option value="red">🔴 Красное</option>
-      <option value="black">⚫ Чёрное</option>
-      <option value="green">🟢 Зеро (0)</option>
-    </select>
-  </div>
-
-  <div>
-    <label for="amount">Ставка (звёзды):</label><br>
-    <input type="number" id="amount" min="1" value="10">
-  </div>
-
-  <button id="spin">Крутить</button>
-
-  <div class="result" id="result"></div>
-
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-
-    let stars = 100;
-
-    const wheel = document.getElementById("wheel");
-    const resultDiv = document.getElementById("result");
-    const starsSpan = document.getElementById("stars");
-    const numbers = [];
-
-    const redNumbers = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
-    const blackNumbers = [2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35];
-
-    for (let i = 0; i <= 36; i++) {
-      const number = document.createElement("div");
-      number.classList.add("number");
-
-      const angle = (360 / 37) * i;
-      number.style.transform = `rotate(${angle}deg) translate(-100%, -100%)`;
-
-      number.innerText = i;
-      if (i === 0) {
-        number.style.color = "lime";
-      } else if (redNumbers.includes(i)) {
-        number.style.color = "crimson";
-      } else {
-        number.style.color = "gray";
-      }
-
-      wheel.appendChild(number);
-      numbers.push(i);
-    }
-
-    function getColor(num) {
-      if (num === 0) return 'green';
-      if (redNumbers.includes(num)) return 'red';
-      return 'black';
-    }
-
-    document.getElementById("spin").addEventListener("click", () => {
-      const bet = document.getElementById("bet").value;
-      const amount = parseInt(document.getElementById("amount").value);
-
-      if (isNaN(amount) || amount <= 0) {
-        alert("Введите корректную ставку.");
-        return;
-      }
-
-      if (amount > stars) {
-        alert("Недостаточно звёзд.");
-        return;
-      }
-
-      stars -= amount;
-      starsSpan.textContent = stars;
-
-      const selected = numbers[Math.floor(Math.random() * numbers.length)];
-      const anglePerNumber = 360 / 37;
-      const rotateTo = 3600 + (360 - selected * anglePerNumber);
-
-      wheel.style.transition = "transform 4s ease-out";
-      wheel.style.transform = `rotate(${rotateTo}deg)`;
-
-      setTimeout(() => {
-        const color = getColor(selected);
-        const won =
-          (bet === "green" && selected === 0) ||
-          (bet === "red" && color === "red") ||
-          (bet === "black" && color === "black");
-
-        let winAmount = 0;
-        if (won) {
-          winAmount = bet === "green" ? amount * 36 : amount * 2;
-          stars += winAmount;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Stars Roulette</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .roulette-number {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
         }
+        .roulette-number:hover {
+            transform: scale(1.1);
+        }
+        .roulette-number.selected {
+            box-shadow: 0 0 0 3px gold;
+        }
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #4b5563;
+            outline: none;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+    <header class="p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Stars Roulette</h1>
+        <div class="flex items-center space-x-2">
+            <span class="text-yellow-400 font-bold">100</span>
+            <i class="fas fa-star text-yellow-400"></i>
+        </div>
+    </header>
 
-        starsSpan.textContent = stars;
-        const emoji = color === 'red' ? '🔴' : color === 'black' ? '⚫' : '🟢';
+    <main class="flex-1 flex flex-col items-center justify-center p-4">
+        <!-- Roulette Table -->
+        <div class="grid grid-cols-12 gap-1 mb-8 w-full max-w-2xl">
+            <!-- 0 -->
+            <div class="col-span-1 flex justify-center">
+                <div class="roulette-number bg-green-600" data-number="0">0</div>
+            </div>
+            
+            <!-- 1-36 -->
+            <div class="col-span-11 grid grid-cols-3 gap-1">
+                <!-- First 12 (1-12) -->
+                <div class="roulette-number bg-red-600" data-number="1">1</div>
+                <div class="roulette-number bg-black" data-number="2">2</div>
+                <div class="roulette-number bg-red-600" data-number="3">3</div>
+                <div class="roulette-number bg-black" data-number="4">4</div>
+                <div class="roulette-number bg-red-600" data-number="5">5</div>
+                <div class="roulette-number bg-black" data-number="6">6</div>
+                <div class="roulette-number bg-red-600" data-number="7">7</div>
+                <div class="roulette-number bg-black" data-number="8">8</div>
+                <div class="roulette-number bg-red-600" data-number="9">9</div>
+                <div class="roulette-number bg-black" data-number="10">10</div>
+                <div class="roulette-number bg-black" data-number="11">11</div>
+                <div class="roulette-number bg-red-600" data-number="12">12</div>
+                
+                <!-- Second 12 (13-24) -->
+                <div class="roulette-number bg-black" data-number="13">13</div>
+                <div class="roulette-number bg-red-600" data-number="14">14</div>
+                <div class="roulette-number bg-black" data-number="15">15</div>
+                <div class="roulette-number bg-red-600" data-number="16">16</div>
+                <div class="roulette-number bg-black" data-number="17">17</div>
+                <div class="roulette-number bg-red-600" data-number="18">18</div>
+                <div class="roulette-number bg-red-600" data-number="19">19</div>
+                <div class="roulette-number bg-black" data-number="20">20</div>
+                <div class="roulette-number bg-red-600" data-number="21">21</div>
+                <div class="roulette-number bg-black" data-number="22">22</div> <div class="roulette-number bg-red-600" data-number="23">23</div>
+                <div class="roulette-number bg-black" data-number="24">24</div>
+                
+                <!-- Third 12 (25-36) -->
+                <div class="roulette-number bg-red-600" data-number="25">25</div>
+                <div class="roulette-number bg-black" data-number="26">26</div>
+                <div class="roulette-number bg-red-600" data-number="27">27</div>
+                <div class="roulette-number bg-black" data-number="28">28</div>
+                <div class="roulette-number bg-red-600" data-number="29">29</div>
+                <div class="roulette-number bg-black" data-number="30">30</div>
+                <div class="roulette-number bg-red-600" data-number="31">31</div>
+                <div class="roulette-number bg-black" data-number="32">32</div>
+                <div class="roulette-number bg-red-600" data-number="33">33</div>
+                <div class="roulette-number bg-black" data-number="34">34</div>
+                <div class="roulette-number bg-red-600" data-number="35">35</div>
+                <div class="roulette-number bg-black" data-number="36">36</div>
+            </div>
+        </div>
 
-        resultDiv.innerHTML = `Выпало: ${emoji} <b>${selected}</b> — ${won ? `🎉 Победа! +${winAmount}⭐` : `😢 Проигрыш -${amount}⭐`}`;
-
-        tg.sendData(JSON.stringify({ bet, selected, won, amount, winAmount }));
-      }, 4200);
-    });
-  </script>
-
+        <!-- Bet Controls -->
+        <div class="w-full max-w-md space-y-4">
+            <div class="flex items-center justify-between">
+                <span class="text-gray-400">Bet Amount:</span>
+                <div class="flex items-center space-x-1">
+                    <span id="betAmount" class="font-bold">10</span>
+                    <i class="fas fa-star text-yellow-400"></i>
+                </div>
+            </div>
+            
+            <input 
+                type="range" 
+                min="10" 
+                max="100" 
+                value="10" 
+                class="slider" 
+                id="betSlider"
+            >
+            
+            <button 
+                id="placeBet" 
+                class="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-bold transition-colors"
+            >
+                Place Bet (10 <i class="fas fa-star"></i>)
+            </button>
+        </div>
+    </main> <script>
+        // Number selection
+        const numbers = document.querySelectorAll('.roulette-number');
+        let selectedNumbers = [];
+        
+        numbers.forEach(number => {
+            number.addEventListener('click', () => {
+                const num = number.dataset.number;
+                if (selectedNumbers.includes(num)) {
+                    selectedNumbers = selectedNumbers.filter(n => n !== num);
+                    number.classList.remove('selected');
+                } else {
+                    selectedNumbers.push(num);
+                    number.classList.add('selected');
+                }
+                updateBetButton();
+            });
+        });
+        
+        // Bet amount slider
+        const betSlider = document.getElementById('betSlider');
+        const betAmountDisplay = document.getElementById('betAmount');
+        const placeBetButton = document.getElementById('placeBet');
+        
+        betSlider.addEventListener('input', () => {
+            const amount = betSlider.value;
+            betAmountDisplay.textContent = amount;
+            updateBetButton();
+        });
+        
+        function updateBetButton() {
+            const amount = betSlider.value;
+            placeBetButton.innerHTML = Place Bet (${amount} <i class="fas fa-star"></i>);
+            
+            if (selectedNumbers.length === 0) {
+                placeBetButton.disabled = true;
+                placeBetButton.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                placeBetButton.disabled = false;
+                placeBetButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+        
+        // Place bet handler
+        placeBetButton.addEventListener('click', () => {
+            const amount = betSlider.value;
+            const numbers = selectedNumbers.join(', ');
+            alert(Bet placed on: ${numbers}\nAmount: ${amount} stars);
+            // Here you would normally redirect to the spinning animation page
+        });
+    </script>
 </body>
 </html>
