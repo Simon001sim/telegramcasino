@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Telegram Stars Roulette</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     .roulette-number {
       width: 40px;
@@ -43,27 +43,28 @@
     }
   </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+<body class="bg-gray-900 text-white min-h-screen flex flex-col justify-end">
   <header class="p-4 flex justify-between items-center">
     <h1 class="text-2xl font-bold">Stars Roulette</h1>
     <div class="flex items-center space-x-2">
-      <span class="text-yellow-400 font-bold" id="starBalance">100</span>
+      <span class="text-yellow-400 font-bold">100</span>
       <i class="fas fa-star text-yellow-400"></i>
     </div>
   </header>
 
   <main class="flex-1 flex flex-col items-center justify-end p-4">
     <!-- Roulette Table -->
-    <div class="flex items-center justify-center mb-8 w-full max-w-2xl space-x-2">
-      <!-- 0 (по центру слева) -->
-      <div class="flex flex-col justify-center">
-        <div class="roulette-number bg-green-600" data-number="0">0</div>
+    <div class="w-full max-w-md flex flex-col items-center space-y-2">
+      <!-- Zero -->
+      <div class="w-full flex justify-center">
+  <div class="roulette-number bg-green-600 rounded-xl w-[132px] h-[40px]" data-number="0">0</div>
+</div>
       </div>
 
-      <!-- 1–36 по 3 вертикальным колонкам -->
-      <div class="flex space-x-[2px]">
-        <!-- Столбец 1 -->
-        <div class="flex flex-col gap-y-1">
+      <!-- Numbers 1–36 -->
+      <div class="grid grid-cols-3 gap-1">
+        <!-- Col 1 -->
+        <div class="flex flex-col gap-1">
           <div class="roulette-number bg-red-600" data-number="1">1</div>
           <div class="roulette-number bg-black" data-number="2">2</div>
           <div class="roulette-number bg-red-600" data-number="3">3</div>
@@ -78,8 +79,8 @@
           <div class="roulette-number bg-red-600" data-number="12">12</div>
         </div>
 
-        <!-- Столбец 2 -->
-        <div class="flex flex-col gap-y-1">
+        <!-- Col 2 -->
+        <div class="flex flex-col gap-1">
           <div class="roulette-number bg-black" data-number="13">13</div>
           <div class="roulette-number bg-red-600" data-number="14">14</div>
           <div class="roulette-number bg-black" data-number="15">15</div>
@@ -94,8 +95,8 @@
           <div class="roulette-number bg-black" data-number="24">24</div>
         </div>
 
-        <!-- Столбец 3 -->
-        <div class="flex flex-col gap-y-1">
+        <!-- Col 3 -->
+        <div class="flex flex-col gap-1">
           <div class="roulette-number bg-red-600" data-number="25">25</div>
           <div class="roulette-number bg-black" data-number="26">26</div>
           <div class="roulette-number bg-red-600" data-number="27">27</div>
@@ -110,50 +111,49 @@
           <div class="roulette-number bg-black" data-number="36">36</div>
         </div>
       </div>
-    </div>
 
-    <!-- Bet Controls -->
-    <div class="w-full max-w-md space-y-4 mb-4">
-      <div class="flex items-center justify-between">
-        <span class="text-gray-400">Bet Amount:</span>
-        <div class="flex items-center space-x-1">
-          <span id="betAmount" class="font-bold">10</span>
-          <i class="fas fa-star text-yellow-400"></i>
-        </div>
+      <!-- Bet on Color -->
+      <div class="flex space-x-4 pt-4">
+        <div class="roulette-number bg-red-600 rounded-full w-16 h-16" data-number="red">RED</div>
+        <div class="roulette-number bg-black rounded-full w-16 h-16" data-number="black">BLACK</div>
       </div>
 
-      <input 
-        type="range" 
-        min="10" 
-        max="100" 
-        value="10" 
-        class="slider" 
-        id="betSlider"
-      >
+      <!-- Bet Controls -->
+      <div class="w-full space-y-4 pt-4">
+        <div class="flex items-center justify-between">
+          <span class="text-gray-400">Bet Amount:</span>
+          <div class="flex items-center space-x-1">
+            <span id="betAmount" class="font-bold">10</span>
+            <i class="fas fa-star text-yellow-400"></i>
+          </div>
+        </div>
 
-      <button 
-        id="placeBet" 
-        class="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-bold transition-colors"
-      >
-        Place Bet (10 <i class="fas fa-star"></i>)
-      </button>
+        <input type="range" min="10" max="100" value="10" class="slider" id="betSlider">
+
+        <button id="placeBet" class="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-bold transition-colors">
+          Place Bet (10 <i class="fas fa-star"></i>)
+        </button>
+      </div>
     </div>
   </main>
 
   <script>
     const numbers = document.querySelectorAll('.roulette-number');
-    let selectedNumbers = [];
+    let selectedNumber = null;
 
     numbers.forEach(number => {
       number.addEventListener('click', () => {
         const num = number.dataset.number;
-        if (selectedNumbers.includes(num)) {
-          selectedNumbers = selectedNumbers.filter(n => n !== num);
+
+        if (selectedNumber === num) {
           number.classList.remove('selected');
+          selectedNumber = null;
         } else {
-          selectedNumbers.push(num);
+          document.querySelectorAll('.roulette-number').forEach(n => n.classList.remove('selected'));
           number.classList.add('selected');
+          selectedNumber = num;
         }
+
         updateBetButton();
       });
     });
@@ -161,7 +161,6 @@
     const betSlider = document.getElementById('betSlider');
     const betAmountDisplay = document.getElementById('betAmount');
     const placeBetButton = document.getElementById('placeBet');
-    const starBalance = document.getElementById('starBalance');
 
     betSlider.addEventListener('input', () => {
       const amount = betSlider.value;
@@ -173,7 +172,7 @@
       const amount = betSlider.value;
       placeBetButton.innerHTML = `Place Bet (${amount} <i class="fas fa-star"></i>)`;
 
-      if (selectedNumbers.length === 0) {
+      if (!selectedNumber) {
         placeBetButton.disabled = true;
         placeBetButton.classList.add('opacity-50', 'cursor-not-allowed');
       } else {
@@ -183,18 +182,8 @@
     }
 
     placeBetButton.addEventListener('click', () => {
-      const amount = parseInt(betSlider.value);
-      const currentBalance = parseInt(starBalance.textContent);
-
-      if (amount > currentBalance) {
-        alert("Not enough stars!");
-        return;
-      }
-
-      const numbers = selectedNumbers.join(', ');
-      alert(`Bet placed on: ${numbers}\nAmount: ${amount} stars`);
-
-      starBalance.textContent = currentBalance - amount;
+      const amount = betSlider.value;
+      alert(`Bet placed on: ${selectedNumber}\nAmount: ${amount} stars`);
     });
 
     updateBetButton();
