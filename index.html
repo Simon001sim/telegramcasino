@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfect Roulette</title>
+    <title>Roulette Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -69,7 +69,8 @@
                 #dc2626 89.1% 91.8%, #1e293b 91.8% 94.5%, #dc2626 94.5% 97.2%,
                 #1e293b 97.2% 100%
             );
-            transform: rotate(4.86deg); /* Ключевая настройка выравнивания */
+            transform: rotate(4.86deg);
+            transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
         }
 
         .wheel-center {
@@ -172,6 +173,21 @@
             max-width: 300px;
             width: 100%;
         }
+
+        @keyframes balanceChange {
+            0% { transform: scale(1); color: white; }
+            50% { transform: scale(1.2); color: #fbbf24; }
+            100% { transform: scale(1); color: #fbbf24; }
+        }
+        
+        .balance-update {
+            animation: balanceChange 0.5s forwards;
+        }
+
+        .fade-out {
+            transition: opacity 0.5s ease;
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
@@ -187,9 +203,9 @@
     </div>
 
     <header class="p-4 flex justify-between items-center">
-        <h1 class="text-2xl font-bold">Perfect Roulette</h1>
+        <h1 class="text-2xl font-bold">Roulette Game</h1>
         <div class="flex items-center space-x-2">
-            <span class="text-yellow-400 font-bold">100</span>
+            <span id="balanceDisplay" class="text-yellow-400 font-bold">100</span>
             <i class="fas fa-star text-yellow-400"></i>
         </div>
     </header>
@@ -274,6 +290,8 @@
     </div>
 
     <script>
+        // Game elements
+        const balanceDisplay = document.getElementById('balanceDisplay');
         const numbers = document.querySelectorAll('.roulette-number');
         const betSlider = document.getElementById('betSlider');
         const betAmountDisplay = document.getElementById('betAmount');
@@ -286,10 +304,14 @@
         const wheel = document.getElementById('wheel');
         const resultDisplay = document.getElementById('result');
         
+        // Game state
         let selectedNumbers = [];
+        let balance = 100;
+        let currentBet = 0;
         const europeanSequence = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
         const redNumbers = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
         
+        // Initialize wheel with perfect alignment
         function initializeWheel() {
             const wheelSize = 320;
             const center = wheelSize / 2;
@@ -318,9 +340,48 @@
                 wheel.appendChild(numberElement);
             });
         }
-
+        
+        // Update balance display with animation
+        function updateBalance() {
+            balanceDisplay.textContent = balance;
+            balanceDisplay.classList.add('balance-update');
+            setTimeout(() => {
+                balanceDisplay.classList.remove('balance-update');
+            }, 500);
+        }
+        
+        // Calculate win amount based on bet type
+        function calculateWin(winningNumber, betAmount, betSelection) {
+            // Straight up (number bet)
+            if (betSelection.includes(winningNumber.toString())) {
+                return betAmount * 36; // 35:1 payout
+            }
+            // Color bets
+            else if (
+                (betSelection.includes('red') && redNumbers.includes(winningNumber)) ||
+                (betSelection.includes('black') && !redNumbers.includes(winningNumber) && winningNumber !== 0)
+            ) {
+                return betAmount * 2; // 1:1 payout
+            }
+            return 0; // Loss
+        }
+        
+        // Update bet button state
+        function updateBetButton() {
+            const amount = betSlider.value;
+            placeBetButton.innerHTML = `Place Bet (${amount} <i class="fas fa-star"></i>)`;
+            
+            const isDisabled = selectedNumbers.length === 0 || balance <= 0 || parseInt(amount) > balance;
+            placeBetButton.disabled = isDisabled;
+            placeBetButton.classList.toggle('opacity-50', isDisabled);
+            placeBetButton.classList.toggle('cursor-not-allowed', isDisabled);
+        }
+        
+        // Event listeners
         numbers.forEach(number => {
             number.addEventListener('click', () => {
+                if (balance <= 0) return;
+                
                 numbers.forEach(n => n.classList.remove('selected'));
                 number.classList.add('selected');
                 selectedNumbers = [number.dataset.number || number.dataset.color];
@@ -328,21 +389,16 @@
             });
         });
         
-        function updateBetButton() {
-            const amount = betSlider.value;
-            placeBetButton.innerHTML = `Place Bet (${amount} <i class="fas fa-star"></i>)`;
-            placeBetButton.disabled = selectedNumbers.length === 0;
-            placeBetButton.classList.toggle('opacity-50', selectedNumbers.length === 0);
-            placeBetButton.classList.toggle('cursor-not-allowed', selectedNumbers.length === 0);
-        }
-        
         betSlider.addEventListener('input', () => {
             betAmountDisplay.textContent = betSlider.value;
             updateBetButton();
         });
         
         placeBetButton.addEventListener('click', () => {
-            const amount = betSlider.value;
+            const amount = parseInt(betSlider.value);
+            if (amount > balance) return;
+            
+            currentBet = amount;
             confirmationText.textContent = `Вы действительно хотите поставить ${amount} звёзд на ${selectedNumbers.join(', ')}?`;
             confirmationModal.style.display = 'flex';
         });
@@ -353,30 +409,51 @@
         
         confirmBet.addEventListener('click', () => {
             confirmationModal.style.display = 'none';
+            
+            // Deduct bet amount from balance
+            balance -= currentBet;
+            updateBalance();
+            
+            // Show roulette wheel
             rouletteWheel.classList.remove('hidden');
             resultDisplay.style.opacity = '0';
             
+            // Reset wheel position
             wheel.style.transition = 'none';
             wheel.style.transform = 'rotate(4.86deg)';
             
             setTimeout(() => {
+                // Generate random winning number
                 const winningNumber = Math.floor(Math.random() * 37);
                 const winningIndex = europeanSequence.indexOf(winningNumber);
                 const spinDegrees = 1800 + (winningIndex * (360 / 37)) + (360 / 37 / 2);
                 
+                // Spin the wheel
                 wheel.style.transition = 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
                 wheel.style.transform = `rotate(${-spinDegrees}deg)`;
                 
                 setTimeout(() => {
+                    // Determine win/loss
+                    const winAmount = calculateWin(winningNumber, currentBet, selectedNumbers);
+                    if (winAmount > 0) {
+                        balance += winAmount;
+                        updateBalance();
+                    }
+                    
+                    // Display result
                     let colorClass = 'green-text', colorText = 'green';
                     if (winningNumber !== 0) {
                         colorClass = redNumbers.includes(winningNumber) ? 'red-text' : 'black-text';
                         colorText = redNumbers.includes(winningNumber) ? 'red' : 'black';
                     }
                     
-                    resultDisplay.innerHTML = `Result: <span class="result-number ${colorClass}">${winningNumber}</span> (${colorText})`;
+                    resultDisplay.innerHTML = `
+                        Result: <span class="result-number ${colorClass}">${winningNumber}</span> (${colorText})<br>
+                        ${winAmount > 0 ? `You won ${winAmount} stars!` : 'You lost!'}
+                    `;
                     resultDisplay.style.opacity = '1';
                     
+                    // Return to main screen
                     setTimeout(() => {
                         resultDisplay.style.opacity = '0';
                         setTimeout(() => {
@@ -390,7 +467,9 @@
             }, 10);
         });
         
+        // Initialize the game
         initializeWheel();
+        updateBalance();
     </script>
 </body>
 </html>
