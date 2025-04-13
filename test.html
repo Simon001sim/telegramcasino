@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CRYSTAL CASINO</title>
+  <style>
+    body {
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .menu, .mode-selection, .faq-screen, .withdraw-screen {
+      width: 520px;
+      height: 560px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+      position: relative;
+    }
+
+    .menu {
+      background: url('https://i.postimg.cc/Xv216Zsy/2025-04-09-220233184.png') no-repeat center center;
+      background-size: cover;
+    }
+
+    .mode-selection {
+      display: none;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      background: url('https://i.postimg.cc/RCtmD0q0/2.png') no-repeat center center;
+      background-size: cover;
+      gap: 25px;
+    }
+
+    .faq-screen {
+      display: none;
+      background: url('https://i.postimg.cc/L84F8dNc/Chat-GPT-Image-12-2025-19-34-37.png') no-repeat center center;
+      background-size: cover;
+    }
+
+    .withdraw-screen {
+      display: none;
+      background: linear-gradient(135deg, #001f33, #004466, #00aaff);
+      background-size: 400% 400%;
+      animation: gradientBG 12s ease infinite;
+      justify-content: flex-start;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .btn {
+      display: block;
+      width: 200px;
+      margin: 5px auto;
+      padding: 10px;
+      font-size: 18px;
+      color: white;
+      background: linear-gradient(45deg, #0ff, #00f);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      text-shadow: 0 0 5px white;
+      box-shadow: 0 0 10px cyan;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px cyan;
+    }
+
+    .menu .btn:first-child {
+      margin-top: 105px;
+    }
+
+    .mode-selection img {
+      width: 200px;
+      height: 200px;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .mode-selection img:hover {
+      transform: scale(1.2);
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+    }
+
+    .faq-content {
+      color: white;
+      margin-top: 50px;
+      padding: 10px;
+      text-align: left;
+      width: 90%;
+      font-size: 14px;
+      line-height: 1.3;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+
+    .faq-item {
+      margin-bottom: 12px;
+      background: rgba(0, 20, 40, 0.7);
+      padding: 8px;
+      border-radius: 8px;
+      border-left: 3px solid cyan;
+    }
+
+    .faq-question {
+      font-weight: bold;
+      color: cyan;
+      margin-bottom: 3px;
+      font-size: 15px;
+    }
+
+    .faq-title {
+      color: cyan;
+      text-align: center;
+      margin: 30px 0 15px 0;
+      font-size: 18px;
+      text-shadow: 0 0 8px rgba(0, 255, 255, 0.8);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 15px;
+      border-radius: 20px;
+    }
+
+    .faq-content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .faq-content::-webkit-scrollbar-thumb {
+      background: cyan;
+      border-radius: 2px;
+    }
+
+    .balance-box {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: rgba(0, 40, 60, 0.8);
+      padding: 8px 12px;
+      border-radius: 12px;
+      color: cyan;
+      font-size: 16px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 0 10px cyan;
+    }
+
+    .withdraw-label {
+      color: white;
+      margin-top: 120px;
+      font-size: 16px;
+    }
+
+    .withdraw-value {
+      color: cyan;
+      font-weight: bold;
+      margin: 10px;
+      font-size: 22px;
+    }
+
+    #starRange {
+      -webkit-appearance: none;
+      width: 80%;
+      height: 10px;
+      background: linear-gradient(to right, cyan 0%, #0ff 100%);
+      border-radius: 10px;
+      outline: none;
+      transition: background 0.3s ease;
+      margin-bottom: 15px;
+    }
+
+    #starRange::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border: 2px solid cyan;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px cyan;
+      transition: transform 0.2s ease;
+    }
+
+    #starRange::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    #starRange::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      background: white;
+      border: 2px solid cyan;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px cyan;
+      transition: transform 0.2s ease;
+    }
+
+    #starRange::-moz-range-thumb:hover {
+      transform: scale(1.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="menu" id="menuScreen">
+    <button class="btn">Профиль</button>
+    <button class="btn">Пополнить баланс</button>
+    <button class="btn" onclick="showModeSelection()">Выбрать режим</button>
+    <button class="btn">Таблица лидеров</button>
+    <button class="btn">Купить статус</button>
+    <button class="btn" onclick="showWithdraw()">Вывод средств</button>
+    <button class="btn" onclick="showFAQ()">FAQ</button>
+  </div>
+
+  <div class="mode-selection" id="modeSelectionScreen">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <img src="https://i.postimg.cc/7YG1SgW6/21.jpg" alt="Mode 1" onclick="alert('Выбран режим 1')">
+    <img src="https://i.postimg.cc/nz0xdGy6/2025-04-11-162014648.png" alt="Mode 2" onclick="alert('Выбран режим 2')">
+    <img src="https://i.postimg.cc/c4qWFC21/1.png" alt="Mode 3" onclick="alert('Выбран режим 3')">
+    <img src="https://i.postimg.cc/gjjW16dr/2025-04-11-162057121.png" alt="Mode 4" onclick="alert('Выбран режим 4')">
+  </div>
+
+  <div class="faq-screen" id="faqScreen">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div class="faq-title">FAQ - ЧАСТЫЕ ВОПРОСЫ</div>
+    <div class="faq-content">
+      <div class="faq-item">
+        <div class="faq-question">Лотерея и участие</div>
+        <div>Ежедневные призы (бонусы и звёзды). Заходите каждый день - призы растут!</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Вывод средств</div>
+        <div>Через Telegram-подарки (до 24ч). Комиссия уменьшается при увеличении суммы вывода.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">VIP-статус</div>
+        <div>Зарабатывайте опыт — скидки на комиссию и приоритетный вывод (выдаётся опытным пользователям).</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Приглашение друзей</div>
+        <div>Получайте % от пополнений друзей и бонусные звёзды.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Поддержка</div>
+        <div>@casil_team — поможем 24/7!</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Бонусы за пополнение</div>
+        <div>Доп. звёзды за депозит. Акции в ТГК: @casilpromo</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="withdraw-screen" id="withdrawScreen">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div class="balance-box">TG Stars: <span id="balanceStars">10</span> ⭐</div>
+    <div class="withdraw-label">Выберите количество звёзд для вывода:</div>
+    <div class="withdraw-value"><span id="selectedStars">1</span> ⭐</div>
+    <input type="range" min="1" max="10" value="1" id="starRange" oninput="updateSliderValue(this.value)">
+    <button class="btn" onclick="alert('Заявка на вывод отправлена!')">Отправить заявку на вывод</button>
+  </div>
+
+  <script>
+    function showModeSelection() {
+      document.getElementById('menuScreen').style.display = 'none';
+      document.getElementById('modeSelectionScreen').style.display = 'flex';
+    }
+
+    function showFAQ() {
+      document.getElementById('menuScreen').style.display = 'none';
+      document.getElementById('faqScreen').style.display = 'flex';
+    }
+
+    function showWithdraw() {
+      document.getElementById('menuScreen').style.display = 'none';
+      document.getElementById('withdrawScreen').style.display = 'flex';
+    }
+
+    function goBack() {
+      document.getElementById('modeSelectionScreen').style.display = 'none';
+      document.getElementById('faqScreen').style.display = 'none';
+      document.getElementById('withdrawScreen').style.display = 'none';
+      document.getElementById('menuScreen').style.display = 'flex';
+    }
+
+    function updateSliderValue(val) {
+      document.getElementById('selectedStars').textContent = val;
+    }
+  </script>
+</body>
+</html>
