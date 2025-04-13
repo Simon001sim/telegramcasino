@@ -2,34 +2,52 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CRYSTAL CASINO</title>
   <style>
-    body {
+    html, body {
+      margin: 0;
+      padding: 0;
       background: #000;
+      font-family: Arial, sans-serif;
+      height: 100%;
+    }
+
+    body {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      height: 100dvh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .menu, .mode-selection, .faq-screen, .withdraw-screen {
-      width: 520px;
-      height: 560px;
+      width: 100%;
+      height: 100%;
       padding: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
-      position: relative;
+      position: absolute;
+      top: 0;
+      left: 0;
+      box-sizing: border-box;
     }
 
     .menu {
       background: url('https://i.postimg.cc/Xv216Zsy/2025-04-09-220233184.png') no-repeat center center;
       background-size: cover;
+      z-index: 1;
     }
 
     .mode-selection {
@@ -41,12 +59,14 @@
       background: url('https://i.postimg.cc/RCtmD0q0/2.png') no-repeat center center;
       background-size: cover;
       gap: 25px;
+      z-index: 2;
     }
 
     .faq-screen {
       display: none;
       background: url('https://i.postimg.cc/L84F8dNc/Chat-GPT-Image-12-2025-19-34-37.png') no-repeat center center;
       background-size: cover;
+      z-index: 2;
     }
 
     .withdraw-screen {
@@ -55,6 +75,7 @@
       background-size: 400% 400%;
       animation: gradientBG 12s ease infinite;
       justify-content: flex-start;
+      z-index: 2;
     }
 
     @keyframes gradientBG {
@@ -65,7 +86,8 @@
 
     .btn {
       display: block;
-      width: 200px;
+      width: 80%;
+      max-width: 240px;
       margin: 5px auto;
       padding: 10px;
       font-size: 18px;
@@ -80,24 +102,26 @@
     }
 
     .btn:hover {
-      transform: scale(1.1);
+      transform: scale(1.05);
       box-shadow: 0 0 20px cyan;
     }
 
     .menu .btn:first-child {
-      margin-top: 105px;
+      margin-top: 80px;
     }
 
     .mode-selection img {
-      width: 200px;
-      height: 200px;
+      width: 45%;
+      max-width: 200px;
+      height: auto;
+      aspect-ratio: 1 / 1;
       border-radius: 15px;
       cursor: pointer;
       transition: transform 0.2s;
     }
 
     .mode-selection img:hover {
-      transform: scale(1.2);
+      transform: scale(1.1);
     }
 
     .back-btn {
@@ -109,6 +133,7 @@
       color: white;
       font-size: 30px;
       cursor: pointer;
+      z-index: 10;
     }
 
     .faq-content {
@@ -135,7 +160,6 @@
       font-weight: bold;
       color: cyan;
       margin-bottom: 3px;
-      font-size: 15px;
     }
 
     .faq-title {
@@ -144,9 +168,6 @@
       margin: 30px 0 15px 0;
       font-size: 18px;
       text-shadow: 0 0 8px rgba(0, 255, 255, 0.8);
-      background: rgba(0, 0, 0, 0.5);
-      padding: 5px 15px;
-      border-radius: 20px;
     }
 
     .faq-content::-webkit-scrollbar {
@@ -198,23 +219,7 @@
       margin-bottom: 15px;
     }
 
-    #starRange::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 22px;
-      height: 22px;
-      background: white;
-      border: 2px solid cyan;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 0 10px cyan;
-      transition: transform 0.2s ease;
-    }
-
-    #starRange::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-    }
-
+    #starRange::-webkit-slider-thumb,
     #starRange::-moz-range-thumb {
       width: 22px;
       height: 22px;
@@ -223,71 +228,53 @@
       border-radius: 50%;
       cursor: pointer;
       box-shadow: 0 0 10px cyan;
-      transition: transform 0.2s ease;
-    }
-
-    #starRange::-moz-range-thumb:hover {
-      transform: scale(1.2);
     }
   </style>
 </head>
 <body>
-  <div class="menu" id="menuScreen">
-    <button class="btn">Профиль</button>
-    <button class="btn">Пополнить баланс</button>
-    <button class="btn" onclick="showModeSelection()">Выбрать режим</button>
-    <button class="btn">Таблица лидеров</button>
-    <button class="btn">Купить статус</button>
-    <button class="btn" onclick="showWithdraw()">Вывод средств</button>
-    <button class="btn" onclick="showFAQ()">FAQ</button>
-  </div>
+  <div class="container">
+    <!-- Меню -->
+    <div class="menu" id="menuScreen">
+      <button class="btn">Профиль</button>
+      <button class="btn">Пополнить баланс</button>
+      <button class="btn" onclick="showModeSelection()">Выбрать режим</button>
+      <button class="btn">Таблица лидеров</button>
+      <button class="btn">Купить статус</button>
+      <button class="btn" onclick="showWithdraw()">Вывод средств</button>
+      <button class="btn" onclick="showFAQ()">FAQ</button>
+    </div>
 
-  <div class="mode-selection" id="modeSelectionScreen">
-    <button class="back-btn" onclick="goBack()">←</button>
-    <img src="https://i.postimg.cc/7YG1SgW6/21.jpg" alt="Mode 1" onclick="alert('Выбран режим 1')">
-    <img src="https://i.postimg.cc/nz0xdGy6/2025-04-11-162014648.png" alt="Mode 2" onclick="alert('Выбран режим 2')">
-    <img src="https://i.postimg.cc/c4qWFC21/1.png" alt="Mode 3" onclick="alert('Выбран режим 3')">
-    <img src="https://i.postimg.cc/gjjW16dr/2025-04-11-162057121.png" alt="Mode 4" onclick="alert('Выбран режим 4')">
-  </div>
+    <!-- Режимы -->
+    <div class="mode-selection" id="modeSelectionScreen">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <img src="https://i.postimg.cc/7YG1SgW6/21.jpg" alt="Mode 1">
+      <img src="https://i.postimg.cc/nz0xdGy6/2025-04-11-162014648.png" alt="Mode 2">
+      <img src="https://i.postimg.cc/c4qWFC21/1.png" alt="Mode 3">
+      <img src="https://i.postimg.cc/gjjW16dr/2025-04-11-162057121.png" alt="Mode 4">
+    </div>
 
-  <div class="faq-screen" id="faqScreen">
-    <button class="back-btn" onclick="goBack()">←</button>
-    <div class="faq-title">FAQ - ЧАСТЫЕ ВОПРОСЫ</div>
-    <div class="faq-content">
-      <div class="faq-item">
-        <div class="faq-question">Лотерея и участие</div>
-        <div>Ежедневные призы (бонусы и звёзды). Заходите каждый день - призы растут!</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question">Вывод средств</div>
-        <div>Через Telegram-подарки (до 24ч). Комиссия уменьшается при увеличении суммы вывода.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question">VIP-статус</div>
-        <div>Зарабатывайте опыт — скидки на комиссию и приоритетный вывод (выдаётся опытным пользователям).</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question">Приглашение друзей</div>
-        <div>Получайте % от пополнений друзей и бонусные звёзды.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question">Поддержка</div>
-        <div>@casil_team — поможем 24/7!</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question">Бонусы за пополнение</div>
-        <div>Доп. звёзды за депозит. Акции в ТГК: @casilpromo</div>
+    <!-- FAQ -->
+    <div class="faq-screen" id="faqScreen">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div class="faq-title">FAQ - ЧАСТЫЕ ВОПРОСЫ</div>
+      <div class="faq-content">
+        <div class="faq-item"><div class="faq-question">Лотерея и участие</div><div>Ежедневные призы (бонусы и звёзды)...</div></div>
+        <div class="faq-item"><div class="faq-question">Вывод средств</div><div>Через Telegram-подарки...</div></div>
+        <div class="faq-item"><div class="faq-question">VIP-статус</div><div>Зарабатывайте опыт...</div></div>
+        <div class="faq-item"><div class="faq-question">Приглашение друзей</div><div>Получайте % от пополнений...</div></div>
+        <div class="faq-item"><div class="faq-question">Поддержка</div><div>@casil_team — поможем 24/7!</div></div>
       </div>
     </div>
-  </div>
 
-  <div class="withdraw-screen" id="withdrawScreen">
-    <button class="back-btn" onclick="goBack()">←</button>
-    <div class="balance-box">TG Stars: <span id="balanceStars">10</span> ⭐</div>
-    <div class="withdraw-label">Выберите количество звёзд для вывода:</div>
-    <div class="withdraw-value"><span id="selectedStars">1</span> ⭐</div>
-    <input type="range" min="1" max="10" value="1" id="starRange" oninput="updateSliderValue(this.value)">
-    <button class="btn" onclick="alert('Заявка на вывод отправлена!')">Отправить заявку на вывод</button>
+    <!-- Вывод -->
+    <div class="withdraw-screen" id="withdrawScreen">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div class="balance-box">TG Stars: <span id="balanceStars">10</span> ⭐</div>
+      <div class="withdraw-label">Выберите количество звёзд для вывода:</div>
+      <div class="withdraw-value"><span id="selectedStars">1</span> ⭐</div>
+      <input type="range" min="1" max="10" value="1" id="starRange" oninput="updateSliderValue(this.value)">
+      <button class="btn" onclick="alert('Заявка на вывод отправлена!')">Отправить заявку</button>
+    </div>
   </div>
 
   <script>
